@@ -46,6 +46,8 @@
 #include <linux/limits.h>
 #include <sys/times.h>
 
+#define ALL_CPUS -1
+
 typedef long long int num;
 
 typedef struct pid_stat_fields{
@@ -126,11 +128,11 @@ extern "C" {
   //NOTE: these functions assume that input FILE *stat_file is already opened
   void search_string_filestream(char *search, FILE *input, long *position);
   pid_stat_fields populate_pid_stats(FILE *stat_file);
-  cpu_stat_fields populate_cpu_stats(FILE *stat_file, uint cpu_num);
+  cpu_stat_fields populate_cpu_stats(FILE *stat_file, int cpu_num);
   
   //functions
   pid_stat_fields get_pid_stat_monitor();
-  cpu_stat_fields get_cpu_stat_monitor(uint cpu_num);
+  cpu_stat_fields get_cpu_stat_monitor(int cpu_num);
   //NOTE: this functions collects data only concerning parent process (not his children)
   float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop, 
 	cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop);

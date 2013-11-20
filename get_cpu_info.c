@@ -74,7 +74,7 @@ pid_stat_fields populate_pid_stats(FILE *stat_file){
     
 }
 
-cpu_stat_fields populate_cpu_stats(FILE *stat_file, uint cpu_num)
+cpu_stat_fields populate_cpu_stats(FILE *stat_file, int cpu_num)
 {
   cpu_stat_fields stats;
   long pos_index = 0;
@@ -83,10 +83,11 @@ cpu_stat_fields populate_cpu_stats(FILE *stat_file, uint cpu_num)
   //if a cpu number (cpu_num) is specified,
   //we must collect stats for a specific #core
   
-  if(cpu_num != NULL){
+  if(cpu_num != ALL_CPUS){
     sprintf(&cpu_label, "cpu%d", cpu_num);
+    printf("monitoring cpu %s\n", cpu_label);
     //DEBUG
-    search_string_filestream(&cpu_label, stat_file, &pos_index);
+    search_string_filestream((char *) &cpu_label, stat_file, &pos_index);
     if(pos_index != NULL) fseek(stat_file, pos_index, SEEK_SET);
     //if something goes wrong here, we just read the first line
   }
@@ -106,7 +107,7 @@ cpu_stat_fields populate_cpu_stats(FILE *stat_file, uint cpu_num)
   return stats;
 }
 
-cpu_stat_fields get_cpu_stat_monitor(uint cpu_num)
+cpu_stat_fields get_cpu_stat_monitor(int cpu_num)
 {
   FILE *fp;
   cpu_stat_fields stats;
@@ -179,7 +180,7 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
   user_util = 100 * (pid_stop.utime - pid_start.utime) / (time_total_stop - time_total_start);
   //jiffies in kernel mode
   sys_util = 100 * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
-  printf("user_util %f, sys_util %f \n (pid_stop.utime %lld, time_total difference: %lld)\n", user_util, sys_util, pid_stop.utime, (time_total_stop - time_total_start));
+  printf("\tuser_util %f, sys_util %f \n\t(pid_start.utime %lld, pid_stop.utime %lld, pid_start.stime %lld, pid_stop.stime %lld, time_total difference: %lld)\n", user_util, sys_util, pid_start.utime,  pid_stop.utime,pid_start.stime,  pid_stop.stime,(time_total_stop - time_total_start));
   //return cumulative %
   return (user_util + sys_util);
     

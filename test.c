@@ -9,7 +9,7 @@ int main( int argc, char *argv[] )
   cpu_stat_fields cpu_start, cpu_stop;
   
   pid_start = get_pid_stat_monitor();
-  cpu_start = get_cpu_stat_monitor(NULL);
+  cpu_start = get_cpu_stat_monitor(ALL_CPUS);
   
   printf("Start working stuff...\n");
    
@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
   printf("\n");
   
   pid_stop = get_pid_stat_monitor();
-  cpu_stop = get_cpu_stat_monitor(NULL);
+  cpu_stop = get_cpu_stat_monitor(ALL_CPUS);
   
   float percent_usage = pid_cpu_usage_percent(pid_start, pid_stop, cpu_start, cpu_stop);
   
