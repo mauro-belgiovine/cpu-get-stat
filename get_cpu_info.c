@@ -180,7 +180,7 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
   user_util = 100 * (pid_stop.utime - pid_start.utime) / (time_total_stop - time_total_start);
   //jiffies in kernel mode
   sys_util = 100 * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
-  printf("\tuser_util %f, sys_util %f \n\t(pid_start.utime %lld, pid_stop.utime %lld, pid_start.stime %lld, pid_stop.stime %lld, time_total difference: %lld)\n", user_util, sys_util, pid_start.utime,  pid_stop.utime,pid_start.stime,  pid_stop.stime,(time_total_stop - time_total_start));
+  
   //return cumulative %
   return (user_util + sys_util);
     
