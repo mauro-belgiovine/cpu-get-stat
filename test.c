@@ -16,7 +16,7 @@ int main( int argc, char *argv[] )
      
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "abc:")) != -1)
+  while ((c = getopt (argc, argv, "c:")) != -1)
     switch (c)
     {
       case 'c':
@@ -46,7 +46,7 @@ int main( int argc, char *argv[] )
   pid_start = get_pid_stat_monitor();
   cpu_start = get_cpu_stat_monitor(cpu_number);
   
-  printf("Start working stuff... cpu number: %d\n", cpu_number);
+  printf("Start working stuff... \n");
    
   //RANDOM STUFF TO MAKE CPU WORK
   

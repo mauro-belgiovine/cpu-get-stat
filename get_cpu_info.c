@@ -22,6 +22,8 @@ void search_string_filestream(char *search, FILE *input, long *position){
       *position = ftell(input)-(strlen(tmp)+1);
   }
   
+  rewind(input);
+  
 }
 
 pid_stat_fields populate_pid_stats(FILE *stat_file){
@@ -79,17 +81,19 @@ cpu_stat_fields populate_cpu_stats(FILE *stat_file, int cpu_num)
   cpu_stat_fields stats;
   long pos_index = 0;
   char cpu_label[10] = "\0"; //eg "cpu0", "cpu16"
-  
+
   //if a cpu number (cpu_num) is specified,
   //we must collect stats for a specific #core
   
   if(cpu_num != ALL_CPUS){
     sprintf(&cpu_label, "cpu%d", cpu_num);
-    printf("monitoring cpu %s\n", cpu_label);
-    //DEBUG
-    search_string_filestream((char *) &cpu_label, stat_file, &pos_index);
+    
+    search_string_filestream((char *) &cpu_label, stat_file, (long *) &pos_index);
+    
     if(pos_index != NULL) fseek(stat_file, pos_index, SEEK_SET);
     //if something goes wrong here, we just read the first line
+    else printf("%s not found... Monitoring cumulative CPU (ALL_CPUS)\n", cpu_label);
+    
   }
   
   //otherwise, we read only cumulative cpu usage 
@@ -174,12 +178,12 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
   
   time_total_stop = cpu_stop.user + cpu_stop.system + cpu_stop.nice + cpu_stop.idle + cpu_stop.iowait + cpu_stop.irq + cpu_stop.softirq;
   
-  //get cpu usage percent for this particular process
-  
-  //jiffies in user mode
+  //get cpu usage percent for this particular process..
+  //..using jiffies in user mode
   user_util = 100 * (pid_stop.utime - pid_start.utime) / (time_total_stop - time_total_start);
-  //jiffies in kernel mode
+  //..using jiffies in kernel mode
   sys_util = 100 * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
+  
   
   //return cumulative %
   return (user_util + sys_util);
