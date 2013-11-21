@@ -161,6 +161,9 @@ pid_stat_fields get_pid_stat_monitor()
 
 float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop, 
 			    cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop){
+			      
+  //this strncmp call checks for "cpu\0" == "cpu\0" and "cpuN" == "cpuN" label (4 byte)
+  if((0 != strncmp(&(cpu_start.cpu_label), &(cpu_stop.cpu_label), 4)) || (pid_start.pid != pid_stop.pid)) return -1; //error
   
   long tickspersec = sysconf(_SC_CLK_TCK);
     
@@ -180,13 +183,37 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
   
   //get cpu usage percent for this particular process..
   //..using jiffies in user mode
-  user_util = 100 * (pid_stop.utime - pid_start.utime) / (time_total_stop - time_total_start);
+  user_util = 100.0f * (pid_stop.utime - pid_start.utime) / (time_total_stop - time_total_start);
   //..using jiffies in kernel mode
-  sys_util = 100 * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
+  sys_util = 100.0f * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
   
   
   //return cumulative %
   return (user_util + sys_util);
     
 
+}
+
+void cpu_usage_stats(cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop){
+  
+  long time_total_start, time_total_stop;
+  
+  //check if stats aren't from same cpu..
+  if(0 != strncmp(&(cpu_start.cpu_label), &(cpu_stop.cpu_label), 4))
+    
+    printf("Error: the two stats structures passed as argument are not from same cpu\n");
+  
+  else{
+    time_total_start = cpu_start.user + cpu_start.system + cpu_start.nice + cpu_start.idle + cpu_start.iowait + cpu_start.irq + cpu_start.softirq;
+    time_total_stop = cpu_stop.user + cpu_stop.system + cpu_stop.nice + cpu_stop.idle + cpu_stop.iowait + cpu_stop.irq + cpu_stop.softirq;
+    printf("\nInfo about %s workload:\n", cpu_start.cpu_label);
+    printf("- utime:\t%.2f %%\n",(100.0f * (cpu_stop.user - cpu_start.user) / (time_total_stop - time_total_start)));
+    printf("- stime:\t%.2f %%\n",(100.0f * (cpu_stop.system - cpu_start.system) / (time_total_stop - time_total_start)));
+    printf("- nice: \t%.2f %%\n",(100.0f * (cpu_stop.nice - cpu_start.nice) / (time_total_stop - time_total_start)));
+    printf("- idle: \t%.2f %%\n",(100.0f * (cpu_stop.idle - cpu_start.idle) / (time_total_stop - time_total_start)));
+    printf("- iowait:\t%.2f %%\n",(100.0f * (cpu_stop.iowait - cpu_start.iowait) / (time_total_stop - time_total_start)));
+    printf("- irq:  \t%.2f %%\n",(100.0f * (cpu_stop.irq - cpu_start.irq) / (time_total_stop - time_total_start)));
+    printf("- softirq:\t%.2f %%\n",(100.0f * (cpu_stop.softirq - cpu_start.softirq) / (time_total_stop - time_total_start)));
+  }
+  
 }

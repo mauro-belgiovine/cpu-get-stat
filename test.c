@@ -69,7 +69,8 @@ int main( int argc, char *argv[] )
   
   float percent_usage = pid_cpu_usage_percent(pid_start, pid_stop, cpu_start, cpu_stop);
   
-  printf("total cpu usage of this process: %f %% \n", percent_usage);
+  printf("total cpu usage of this process: %.2f %% \n", percent_usage);
+  cpu_usage_stats(cpu_start, cpu_stop);
   
   return 0;
 }

@@ -133,9 +133,13 @@ extern "C" {
   //functions
   pid_stat_fields get_pid_stat_monitor();
   cpu_stat_fields get_cpu_stat_monitor(int cpu_num);
+  
   //NOTE: this functions collects data only concerning parent process (not his children)
   float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop, 
 	cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop);
+  
+  //NOTE: prints info about cpu usage between two statuses
+  void cpu_usage_stats(cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop);
     
 #ifdef __cplusplus
 }
