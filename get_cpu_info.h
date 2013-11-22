@@ -45,6 +45,7 @@
 #include <time.h>
 #include <linux/limits.h>
 #include <sys/times.h>
+#include <math.h>
 
 #define ALL_CPUS -1
 
@@ -140,6 +141,7 @@ extern "C" {
   
   //NOTE: prints info about cpu usage between two statuses
   void cpu_usage_stats(cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop);
+  void print_graph_bar(float float_value);
     
 #ifdef __cplusplus
 }

@@ -188,6 +188,7 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
   sys_util = 100.0f * (pid_stop.stime - pid_start.stime) / (time_total_stop - time_total_start);
   
   
+  
   //return cumulative %
   return (user_util + sys_util);
     
@@ -197,6 +198,7 @@ float pid_cpu_usage_percent(pid_stat_fields pid_start, pid_stat_fields pid_stop,
 void cpu_usage_stats(cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop){
   
   long time_total_start, time_total_stop;
+  float percent;
   
   //check if stats aren't from same cpu..
   if(0 != strncmp(&(cpu_start.cpu_label), &(cpu_stop.cpu_label), 4))
@@ -207,13 +209,44 @@ void cpu_usage_stats(cpu_stat_fields cpu_start, cpu_stat_fields cpu_stop){
     time_total_start = cpu_start.user + cpu_start.system + cpu_start.nice + cpu_start.idle + cpu_start.iowait + cpu_start.irq + cpu_start.softirq;
     time_total_stop = cpu_stop.user + cpu_stop.system + cpu_stop.nice + cpu_stop.idle + cpu_stop.iowait + cpu_stop.irq + cpu_stop.softirq;
     printf("\nInfo about %s workload:\n", cpu_start.cpu_label);
-    printf("- utime:\t%.2f %%\n",(100.0f * (cpu_stop.user - cpu_start.user) / (time_total_stop - time_total_start)));
-    printf("- stime:\t%.2f %%\n",(100.0f * (cpu_stop.system - cpu_start.system) / (time_total_stop - time_total_start)));
-    printf("- nice: \t%.2f %%\n",(100.0f * (cpu_stop.nice - cpu_start.nice) / (time_total_stop - time_total_start)));
-    printf("- idle: \t%.2f %%\n",(100.0f * (cpu_stop.idle - cpu_start.idle) / (time_total_stop - time_total_start)));
-    printf("- iowait:\t%.2f %%\n",(100.0f * (cpu_stop.iowait - cpu_start.iowait) / (time_total_stop - time_total_start)));
-    printf("- irq:  \t%.2f %%\n",(100.0f * (cpu_stop.irq - cpu_start.irq) / (time_total_stop - time_total_start)));
-    printf("- softirq:\t%.2f %%\n",(100.0f * (cpu_stop.softirq - cpu_start.softirq) / (time_total_stop - time_total_start)));
+    
+    percent = 100.0f * (cpu_stop.user - cpu_start.user) / (time_total_stop - time_total_start);
+    printf("- utime:\t%.2f %%\t",percent);
+    print_graph_bar(percent);
+    
+    percent = 100.0f * (cpu_stop.system - cpu_start.system) / (time_total_stop - time_total_start);
+    printf("- stime:\t%.2f %%\t",percent);
+    print_graph_bar(percent);
+    
+    percent = 100.0f * (cpu_stop.nice - cpu_start.nice) / (time_total_stop - time_total_start);
+    printf("- nice: \t%.2f %%\t", percent);
+    print_graph_bar(percent);
+    
+    percent = 100.0f * (cpu_stop.idle - cpu_start.idle) / (time_total_stop - time_total_start);
+    printf("- idle: \t%.2f %%\t",percent);
+    print_graph_bar(percent);
+
+    percent = 100.0f * (cpu_stop.iowait - cpu_start.iowait) / (time_total_stop - time_total_start);
+    printf("- iowait:\t%.2f %%\t",percent);
+    print_graph_bar(percent);
+    
+    percent = 100.0f * (cpu_stop.irq - cpu_start.irq) / (time_total_stop - time_total_start);
+    printf("- irq:  \t%.2f %%\t",percent);
+    print_graph_bar(percent);
+    
+    percent = 100.0f * (cpu_stop.softirq - cpu_start.softirq) / (time_total_stop - time_total_start);
+    printf("- softirq:\t%.2f %%\t",percent);
+    print_graph_bar(percent);
   }
   
+}
+
+void print_graph_bar(float float_value){
+  uint i;
+  printf("[");
+  int int_percent = (float_value >= 0.0f) ? (int) floor(float_value + 0.5) : (int) floor(float_value - 0.5);
+  for(i = 0; i < int_percent; i++){
+    printf("=");
+  }
+  printf("]\n");
 }

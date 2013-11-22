@@ -1,5 +1,6 @@
 CC=gcc
 CFLAGS=-I.
+LDFLAGS=-lm
 DEPS = get_cpu_info.h
 OBJ = test.o get_cpu_info.o 
 
@@ -7,7 +8,7 @@ OBJ = test.o get_cpu_info.o
 	$(CC) -g -c -o $@ $< $(CFLAGS)
 
 get_cpu_info: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
 	rm *.o get_cpu_info
